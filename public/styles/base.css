@@ -1,0 +1,66 @@
+:root {
+    --primary-color: #111827;
+    --accent-color: #2563eb;
+    --bg-color: #f5f7fb;
+    --card-bg: #ffffff;
+    --text-color: #111827;
+    --gray-light: #64748b;
+    --border-color: #e2e8f0;
+    --shadow-soft: 0 20px 45px rgba(15, 23, 42, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 24%),
+        linear-gradient(120deg, #f8fafc 0%, var(--bg-color) 45%, #eef4ff 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+body.gallery-page {
+    padding: 24px 20px 44px;
+}
+
+.page-shell {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 32px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: #fff;
+    font-size: 18px;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+}
+
+.nav-user {
+    color: var(--gray-light);
+    font-size: 14px;
+    font-weight: 600;
+}

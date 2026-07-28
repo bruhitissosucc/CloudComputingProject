@@ -1,0 +1,92 @@
+.admin-section {
+    margin-top: 8px;
+}
+
+.admin-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+    padding: 8px;
+    overflow: hidden;
+}
+
+.admin-table-wrap {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.admin-table th, .admin-table td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.admin-table thead th {
+    background: var(--primary-color);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.admin-table thead th:first-child { border-top-left-radius: 16px; }
+.admin-table thead th:last-child { border-top-right-radius: 16px; }
+
+.admin-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-thumb {
+    width: 64px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    display: block;
+}
+
+.uploader-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: var(--accent-color);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.btn-delete-admin {
+    background-color: #fff;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    transition: all 0.15s ease;
+}
+
+.btn-delete-admin:hover {
+    background-color: #b91c1c;
+    color: #fff;
+    border-color: #b91c1c;
+}
+
+.btn-delete-admin:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

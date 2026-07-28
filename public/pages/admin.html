@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard • Cloud Gallery</title>
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="gallery-page">
+    <div class="page-shell">
+        <header class="page-header">
+            <nav class="top-nav">
+                <a class="brand" href="index.html">
+                    <span class="brand-mark">☁</span>
+                    <span>Cloud Gallery</span>
+                </a>
+                <div class="nav-actions" id="navActions">
+                    <a href="login.html" class="nav-link">Login</a>
+                    <a href="register.html" class="nav-link nav-link-cta">Register</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="admin-section">
+            <div class="section-heading">
+                <div>
+                    <h2>Admin Dashboard</h2>
+                    <p id="adminSubtitle">Loading images…</p>
+                </div>
+            </div>
+
+            <div class="admin-panel">
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Preview</th>
+                                <th>Image Title</th>
+                                <th>Uploaded By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || user.role !== 'admin') {
+            alert('Access denied');
+            window.location.href = 'login.html';
+        }
+        window.addEventListener('DOMContentLoaded', loadAdminDashboard);
+    </script>
+</body>
+</html>

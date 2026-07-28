@@ -1,0 +1,35 @@
+[33mcommit 28fc8af30a9329c485e38c830eeaacca5b571411[m
+Author: bruhitissosucc <phamthanhnhan790@gmail.com>
+Date:   Tue Jul 7 04:02:58 2026 +0700
+
+    security: remove env file from tracking
+
+[33mcommit 78b9a8a9d27a39940e2bc080ee3b456bb7aa9b10[m
+Author: bruhitissosucc <phamthanhnhan790@gmail.com>
+Date:   Tue Jul 7 03:33:30 2026 +0700
+
+    feat: integrate mongodb atlas for permanent image sharing and sync
+
+[33mcommit efa43a6040fe98bdb98400f390ba0e0a2c6ff7a2[m
+Author: bruhitissosucc <phamthanhnhan790@gmail.com>
+Date:   Tue Jun 30 09:02:55 2026 +0700
+
+    UI/UX upgrade
+
+[33mcommit 34216584deeada97a97e61b21db46af5f41e207f[m
+Author: bruhitissosucc <phamthanhnhan790@gmail.com>
+Date:   Tue Jun 30 06:17:18 2026 +0700
+
+    security: remove env file from tracking
+
+[33mcommit 6aca30c754b13e73b944dca1b0f87b4edc3f9080[m
+Author: bruhitissosucc <phamthanhnhan790@gmail.com>
+Date:   Tue Jun 30 06:04:32 2026 +0700
+
+    reconfig cloudfront url
+
+[33mcommit cd5ce33378f55e97e07e03489f8901de28b11c3f[m
+Author: bruhitissosucc <phamthanhnhan790@gmail.com>
+Date:   Tue Jun 30 05:40:53 2026 +0700
+
+    initial commit

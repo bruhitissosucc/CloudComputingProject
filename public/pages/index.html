@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Gallery</title>
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="gallery-page">
+    <div class="page-shell">
+        <header class="page-header">
+            <nav class="top-nav">
+                <a class="brand" href="index.html">
+                    <span class="brand-mark">☁</span>
+                    <span>Cloud Gallery</span>
+                </a>
+                <div class="nav-actions" id="navActions">
+                    <a href="login.html" class="nav-link">Login</a>
+                    <a href="register.html" class="nav-link nav-link-cta">Register</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="gallery-section" id="gallery-section">
+            <div class="section-heading">
+                <h2>Gallery</h2>
+            </div>
+            <div class="gallery-container" id="gallery"></div>
+        </main>
+    </div>
+
+    <div id="lightboxModal" class="lightbox-modal" onclick="closeLightboxModal(event)">
+        <button class="close-lightbox" onclick="forceCloseLightbox()">&times;</button>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <div class="lightbox-img-wrapper">
+                <img id="lightboxImg" src="" alt="">
+            </div>
+            <div class="lightbox-details">
+                <div id="lightboxTitle" class="lightbox-title">Image Name</div>
+                <div class="lightbox-actions">
+                    <a id="downloadLink" href="" download class="action-btn btn-download">Download</a>
+                    <button id="copyCdnBtn" class="action-btn btn-copy-cdn">Copy Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>
