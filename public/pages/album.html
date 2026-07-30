@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album • Cloud Gallery</title>
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="gallery-page">
+    <div class="page-shell">
+        <header class="page-header">
+            <nav class="top-nav">
+                <a class="brand" href="index.html">
+                    <span class="brand-mark">☁</span>
+                    <span>Cloud Gallery</span>
+                </a>
+                <div class="nav-actions" id="navActions">
+                    <a href="login.html" class="nav-link">Login</a>
+                    <a href="register.html" class="nav-link nav-link-cta">Register</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="gallery-section">
+            <a href="account.html" class="nav-link" style="padding-left:0;">&larr; My account</a>
+            <div class="section-heading">
+                <div>
+                    <h2 id="albumName">Album</h2>
+                    <p id="albumSubtitle">Loading…</p>
+                </div>
+                <button class="account-action-btn" onclick="renameCurrentAlbum()">Rename album</button>
+            </div>
+
+            <div class="gallery-container" id="albumGallery"></div>
+        </main>
+    </div>
+
+    <div id="lightboxModal" class="lightbox-modal" onclick="closeLightboxModal(event)">
+        <button class="close-lightbox" onclick="forceCloseLightbox()">&times;</button>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <div class="lightbox-img-wrapper">
+                <img id="lightboxImg" src="" alt="">
+            </div>
+            <div class="lightbox-details">
+                <div id="lightboxTitle" class="lightbox-title">Image Name</div>
+                <div class="lightbox-actions">
+                    <a id="downloadLink" href="" download class="action-btn btn-download">Download</a>
+                    <button id="copyCdnBtn" class="action-btn btn-copy-cdn">Copy Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const albumId = params.get('id');
+        const user = getCurrentUser();
+
+        if (!user) {
+            window.location.href = 'login.html';
+        } else if (!albumId) {
+            window.location.href = 'account.html';
+        } else {
+            window.addEventListener('DOMContentLoaded', () => {
+                updateAuthNav();
+                loadAlbumDetail(albumId);
+            });
+        }
+    </script>
+</body>
+</html>
