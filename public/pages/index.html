@@ -29,6 +29,14 @@
         </main>
     </div>
 
+    <main class="gallery-section" id="gallery-section">
+    <div class="section-heading">
+        <h2>Gallery</h2>
+        <input type="text" id="gallerySearch" class="search-input" placeholder="Search images..." oninput="filterGallery(this.value)">
+    </div>
+    <div class="gallery-container" id="gallery"></div>
+</main>
+
     <div id="lightboxModal" class="lightbox-modal" onclick="closeLightboxModal(event)">
         <button class="close-lightbox" onclick="forceCloseLightbox()">&times;</button>
         <div class="lightbox-content" onclick="event.stopPropagation()">

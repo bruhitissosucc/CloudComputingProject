@@ -512,5 +512,53 @@ async function deleteImage(imageId, buttonEl) {
     }
 }
 
+//search bar
+let allGalleryImages = [];
+
+async function loadInitialGallery() {
+    const gallery = document.getElementById('gallery');
+    if (!gallery) return;
+
+    try {
+        const res = await fetch('/api/images');
+        const images = await res.json();
+        allGalleryImages = images || [];
+        renderGalleryImages(allGalleryImages, '');
+    } catch (e) {
+        console.error("Error loading initial image list:", e);
+        gallery.innerHTML = '<div class="empty-state">Unable to load the gallery right now. Please try again later.</div>';
+    }
+}
+
+function renderGalleryImages(images, query) {
+    const gallery = document.getElementById('gallery');
+    if (!gallery) return;
+
+    gallery.innerHTML = '';
+
+    if (!images || images.length === 0) {
+        const message = query
+            ? `No images match "${escapeHTML(query)}".`
+            : 'No images have been uploaded yet. Be the first to add one.';
+        gallery.innerHTML = `<div class="empty-state">${message}</div>`;
+        return;
+    }
+
+    images.forEach(img => addCardToGallery(img.title, img.url, img._id, img.uploadedBy));
+}
+
+function filterGallery(query) {
+    const trimmed = query.trim().toLowerCase();
+    if (!trimmed) {
+        renderGalleryImages(allGalleryImages, '');
+        return;
+    }
+
+    const filtered = allGalleryImages.filter(img =>
+        img.title && img.title.toLowerCase().includes(trimmed)
+    );
+    renderGalleryImages(filtered, query);
+}
+
 // initial load of gallery when the page is ready
 window.onload = loadInitialGallery;

@@ -16,6 +16,11 @@
         flex-direction: column;
         align-items: start;
     }
+
+    .search-input {
+        width: 100%;
+    }
+
 }
 
 @media (max-width: 600px) {
@@ -56,4 +61,5 @@
     .auth-container {
         padding: 24px;
     }
+    
 }
