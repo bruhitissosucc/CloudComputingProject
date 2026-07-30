@@ -1,5 +1,6 @@
 const path = require('path');
 const ImageModel = require('../models/Image');
+const AlbumModel = require('../models/Album');
 const { uploadToS3, deleteFromS3 } = require('../services/s3');
 
 exports.uploadImage = async (req, res) => {
@@ -35,21 +36,29 @@ exports.uploadImage = async (req, res) => {
 
 exports.listImages = async (req, res) => {
     try {
-        const images = await ImageModel.find()
-            .sort({ createdAt: -1 })
-            .populate('uploadedBy', 'username');
-        res.json(images);
+        const images = await ImageModel.find().sort({ createdAt: -1 }).populate('uploadedBy', 'username');
+
+        let likedSet = new Set();
+        if (req.user) {
+            const likedAlbum = await AlbumModel.findOne({ owner: req.user.id, isSystem: true });
+            if (likedAlbum) likedSet = new Set(likedAlbum.images.map(id => id.toString()));
+        }
+
+        res.json(images.map(img => ({ ...img.toObject(), likedByMe: likedSet.has(img._id.toString()) })));
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+
 exports.listUserImages = async (req, res) => {
     try {
-        const images = await ImageModel.find({ uploadedBy: req.user.id })
-            .sort({ createdAt: -1 })
-            .populate('uploadedBy', 'username');
-        res.json(images);
+        const images = await ImageModel.find({ uploadedBy: req.user.id }).sort({ createdAt: -1 });
+
+        const likedAlbum = await AlbumModel.findOne({ owner: req.user.id, isSystem: true });
+        const likedSet = likedAlbum ? new Set(likedAlbum.images.map(id => id.toString())) : new Set();
+
+        res.json(images.map(img => ({ ...img.toObject(), likedByMe: likedSet.has(img._id.toString()) })));
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

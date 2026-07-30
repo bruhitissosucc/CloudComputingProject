@@ -46,4 +46,22 @@ const authorizeRoles = (...allowedRoles) => {
     };
 };
 
-module.exports = { authenticateUser, authorizeRoles };
+const attachUserIfPresent = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = { id: decoded.userId, role: decoded.role };
+    } catch (error) {
+        // Token sai/hết hạn trên route tuỳ chọn: coi như khách, không chặn
+    }
+
+    next();
+};
+
+module.exports = { authenticateUser, authorizeRoles, attachUserIfPresent };

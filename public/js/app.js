@@ -79,7 +79,7 @@ async function uploadImage() {
             if (document.getElementById('accountGallery')) {
                 addAccountCardToGallery({ title: customTitle || data.title || file.name, url: data.url, id: data.id, uploadedBy: data.uploadedBy });
             } else {
-                addCardToGallery(customTitle || data.title || file.name, data.url, data.id, data.uploadedBy);
+                images.forEach(img => addCardToGallery(img.title, img.url, img._id, img.uploadedBy, img.likedByMe));
             }
             fileInput.value = "";
             if (titleInput) titleInput.value = "";
@@ -109,9 +109,12 @@ function getAuthToken() {
     return localStorage.getItem('token') || '';
 }
 
-function addCardToGallery(title, url, imageId, uploadedBy) {
+function addCardToGallery(title, url, imageId, uploadedBy, likedByMe) {
     const gallery = document.getElementById('accountGallery') || document.getElementById('gallery');
     if (!gallery) return;
+
+    const emptyState = gallery.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
 
     const safeTitle = escapeHTML(title);
     const safeUrl = encodeURI(url);
@@ -125,12 +128,21 @@ function addCardToGallery(title, url, imageId, uploadedBy) {
     card.className = 'pin-card';
     card.dataset.imageId = imageId || '';
 
+    const likeBtn = currentUser
+        ? `<button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="event.stopPropagation(); toggleLike('${imageId}', this)">${likedByMe ? '&#9829;' : '&#9825;'}</button>`
+        : '';
+    const addAlbumBtn = currentUser
+        ? `<button class="album-add-btn" onclick="event.stopPropagation(); openAlbumPicker('${imageId}', this)">Add to Album</button>`
+        : '';
+
     card.innerHTML = `
+        ${likeBtn}
         <img src="${safeUrl}" alt="${safeTitle}" loading="lazy" onclick="openLightboxModal('${safeTitle}', '${safeUrl}')">
         <div class="pin-info">
             <div class="pin-title" title="${safeTitle}">${safeTitle}</div>
             <div class="pin-actions">
                 <button class="copy-btn" onclick="copyToClipboard('${safeUrl}', this)">Copy Link</button>
+                ${addAlbumBtn}
                 ${isOwner ? `<button class="delete-btn" onclick="deleteImage('${imageId}', this)">Delete</button>` : ''}
             </div>
         </div>
@@ -143,22 +155,32 @@ function addAccountCardToGallery(imageData) {
     const gallery = document.getElementById('accountGallery');
     if (!gallery) return;
 
+    const emptyState = gallery.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+
     const safeTitle = escapeHTML(imageData.title || 'Untitled image');
     const safeUrl = encodeURI(imageData.url || '');
     const imageId = imageData.id || imageData._id || '';
+    const likedByMe = !!imageData.likedByMe;
 
     const card = document.createElement('div');
     card.className = 'account-image-card';
     card.dataset.imageId = imageId;
 
     card.innerHTML = `
-        <img src="${safeUrl}" alt="${safeTitle}" loading="lazy" onclick="openLightboxModal('${safeTitle}', '${safeUrl}')">
+        <div class="account-image-media">
+            <img src="${safeUrl}" alt="${safeTitle}" loading="lazy" onclick="openLightboxModal('${safeTitle}', '${safeUrl}')">
+            <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLike('${imageId}', this)">${likedByMe ? '&#9829;' : '&#9825;'}</button>
+        </div>
         <div class="account-image-body">
             <div class="account-image-title">${safeTitle}</div>
             <div class="account-image-actions">
                 <input type="text" class="account-title-input" value="${safeTitle}" aria-label="Edit image title">
                 <button class="account-action-btn" onclick="saveImageTitle('${imageId}', this.previousElementSibling)">Save</button>
                 <button class="delete-btn account-delete-btn" onclick="deleteImage('${imageId}', this)">Delete</button>
+            </div>
+            <div class="account-image-actions">
+                <button class="album-add-btn" onclick="openAlbumPicker('${imageId}', this)">Add to Album</button>
             </div>
         </div>
     `;
@@ -275,7 +297,7 @@ async function loadInitialGallery() {
         }
 
         gallery.innerHTML = '';
-        images.forEach(img => addCardToGallery(img.title, img.url, img._id, img.uploadedBy));
+        images.forEach(img => addCardToGallery(img.title, img.url, img._id, img.uploadedBy, img.likedByMe));
     } catch (e) {
         console.error("Lỗi đồng bộ danh sách hình ảnh ban đầu:", e);
         gallery.innerHTML = '<div class="empty-state">Unable to load the gallery right now. Please try again later.</div>';
@@ -323,6 +345,262 @@ function updateAuthNav() {
     }
 }
 
+
+async function toggleLike(imageId, btnEl) {
+    if (!getCurrentUser()) {
+        alert('Please log in to like images.');
+        return;
+    }
+
+    btnEl.disabled = true;
+    try {
+        const res = await fetch(`/api/images/${imageId}/like`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            btnEl.classList.toggle('liked', data.liked);
+            btnEl.innerHTML = data.liked ? '&#9829;' : '&#9825;';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (err) {
+        alert('System error: Unable to connect.');
+    } finally {
+        btnEl.disabled = false;
+    }
+}
+
+async function openAlbumPicker(imageId, anchorEl) {
+    closeAlbumPicker();
+
+    let albums = [];
+    try {
+        const res = await fetch('/api/albums', { headers: { 'Authorization': `Bearer ${getAuthToken()}` } });
+        albums = await res.json();
+    } catch (e) {
+        alert('Unable to load your albums right now.');
+        return;
+    }
+
+    const customAlbums = albums.filter(a => !a.isSystem);
+    const items = customAlbums.map(a =>
+        `<button class="album-picker-item" onclick="addToAlbum('${a._id}', '${imageId}')">${escapeHTML(a.name)}</button>`
+    ).join('');
+
+    const menu = document.createElement('div');
+    menu.className = 'album-picker-menu';
+    menu.id = 'albumPickerMenu';
+    menu.innerHTML = `
+        ${items || '<div class="album-picker-empty">No albums yet</div>'}
+        <button class="album-picker-item album-picker-new" onclick="createAlbumFromPicker('${imageId}')">+ New album</button>
+    `;
+    document.body.appendChild(menu);
+
+    const rect = anchorEl.getBoundingClientRect();
+    menu.style.top = `${window.scrollY + rect.bottom + 6}px`;
+    menu.style.left = `${window.scrollX + rect.left}px`;
+
+    setTimeout(() => document.addEventListener('click', closeAlbumPickerOnClickAway), 0);
+}
+
+function closeAlbumPicker() {
+    const menu = document.getElementById('albumPickerMenu');
+    if (menu) menu.remove();
+    document.removeEventListener('click', closeAlbumPickerOnClickAway);
+}
+
+function closeAlbumPickerOnClickAway(e) {
+    const menu = document.getElementById('albumPickerMenu');
+    if (menu && !menu.contains(e.target)) closeAlbumPicker();
+}
+
+async function addToAlbum(albumId, imageId) {
+    try {
+        const res = await fetch(`/api/albums/${albumId}/images`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getAuthToken()}` },
+            body: JSON.stringify({ imageId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeAlbumPicker();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (err) {
+        alert('System error: Unable to connect.');
+    }
+}
+
+async function createAlbumFromPicker(imageId) {
+    const name = prompt('Album name:');
+    if (!name || !name.trim()) return;
+
+    try {
+        const res = await fetch('/api/albums', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getAuthToken()}` },
+            body: JSON.stringify({ name: name.trim() })
+        });
+        const data = await res.json();
+        if (data.success) {
+            await addToAlbum(data.album._id, imageId);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (err) {
+        alert('System error: Unable to connect.');
+    }
+}
+
+async function loadMyAlbums() {
+    const grid = document.getElementById('albumsGrid');
+    if (!grid) return;
+
+    try {
+        const res = await fetch('/api/albums', { headers: { 'Authorization': `Bearer ${getAuthToken()}` } });
+        const albums = await res.json();
+
+        grid.innerHTML = '';
+        albums.forEach(album => {
+            const cover = album.images && album.images.length > 0 ? album.images[0].url : '';
+            const card = document.createElement('div');
+            card.className = 'album-card';
+            card.innerHTML = `
+                <a href="album.html?id=${album._id}" class="album-cover" style="background-image:url('${cover ? encodeURI(cover) : ''}')">
+                    ${!cover ? '<span class="album-cover-empty">No images</span>' : ''}
+                </a>
+                <div class="album-meta">
+                    <a href="album.html?id=${album._id}" class="album-name">${escapeHTML(album.name)}</a>
+                    <span class="album-count">${album.images.length} image${album.images.length === 1 ? '' : 's'}</span>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    } catch (err) {
+        console.error('Unable to load albums:', err);
+    }
+}
+
+async function createNewAlbum() {
+    const name = prompt('Album name:');
+    if (!name || !name.trim()) return;
+
+    try {
+        const res = await fetch('/api/albums', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getAuthToken()}` },
+            body: JSON.stringify({ name: name.trim() })
+        });
+        const data = await res.json();
+        if (data.success) {
+            loadMyAlbums();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (err) {
+        alert('System error: Unable to connect.');
+    }
+}
+
+let currentAlbumId = null;
+
+async function loadAlbumDetail(albumId) {
+    currentAlbumId = albumId;
+    const gallery = document.getElementById('albumGallery');
+    const nameEl = document.getElementById('albumName');
+    const subtitleEl = document.getElementById('albumSubtitle');
+    if (!gallery) return;
+
+    try {
+        const res = await fetch(`/api/albums/${albumId}`, { headers: { 'Authorization': `Bearer ${getAuthToken()}` } });
+        const album = await res.json();
+
+        if (!album || album.success === false) {
+            subtitleEl.innerText = (album && album.error) || 'Unable to load this album.';
+            return;
+        }
+
+        nameEl.innerText = album.name;
+        subtitleEl.innerText = `${album.images.length} image${album.images.length === 1 ? '' : 's'}`;
+
+        gallery.innerHTML = '';
+        if (album.images.length === 0) {
+            gallery.innerHTML = '<div class="empty-state">No images in this album yet.</div>';
+            return;
+        }
+        album.images.forEach(img => addAlbumImageCard(img, albumId));
+    } catch (err) {
+        console.error('Unable to load album:', err);
+        subtitleEl.innerText = 'Unable to load this album right now.';
+    }
+}
+
+function addAlbumImageCard(imageData, albumId) {
+    const gallery = document.getElementById('albumGallery');
+    if (!gallery) return;
+
+    const safeTitle = escapeHTML(imageData.title || 'Untitled image');
+    const safeUrl = encodeURI(imageData.url || '');
+    const imageId = imageData._id || imageData.id || '';
+
+    const card = document.createElement('div');
+    card.className = 'pin-card';
+    card.dataset.imageId = imageId;
+    card.innerHTML = `
+        <img src="${safeUrl}" alt="${safeTitle}" loading="lazy" onclick="openLightboxModal('${safeTitle}', '${safeUrl}')">
+        <div class="pin-info">
+            <div class="pin-title" title="${safeTitle}">${safeTitle}</div>
+            <div class="pin-actions">
+                <button class="copy-btn" onclick="copyToClipboard('${safeUrl}', this)">Copy Link</button>
+                <button class="delete-btn" onclick="removeFromAlbum('${albumId}', '${imageId}', this)">Remove</button>
+            </div>
+        </div>
+    `;
+    gallery.appendChild(card);
+}
+
+async function removeFromAlbum(albumId, imageId, btnEl) {
+    try {
+        const res = await fetch(`/api/albums/${albumId}/images/${imageId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            btnEl.closest('.pin-card').remove();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (err) {
+        alert('System error: Unable to connect.');
+    }
+}
+
+async function renameCurrentAlbum() {
+    if (!currentAlbumId) return;
+    const newName = prompt('New album name:', document.getElementById('albumName').innerText);
+    if (!newName || !newName.trim()) return;
+
+    try {
+        const res = await fetch(`/api/albums/${currentAlbumId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getAuthToken()}` },
+            body: JSON.stringify({ name: newName.trim() })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('albumName').innerText = data.album.name;
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (err) {
+        alert('System error: Unable to connect.');
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     updateAuthNav();
 
@@ -333,6 +611,7 @@ window.addEventListener('DOMContentLoaded', () => {
             return;
         }
         loadMyImages();
+        loadMyAlbums();
     } else {
         loadInitialGallery();
     }
@@ -544,7 +823,7 @@ function renderGalleryImages(images, query) {
         return;
     }
 
-    images.forEach(img => addCardToGallery(img.title, img.url, img._id, img.uploadedBy));
+    images.forEach(img => addCardToGallery(img.title, img.url, img._id, img.uploadedBy, img.likedByMe));
 }
 
 function filterGallery(query) {

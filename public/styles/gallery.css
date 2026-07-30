@@ -128,3 +128,83 @@
 .search-input::placeholder {
     color: var(--gray-light);
 }
+
+.like-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    color: #94a3b8;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.like-btn:hover {
+    transform: scale(1.08);
+}
+
+.like-btn.liked {
+    color: #ef4444;
+}
+
+.album-add-btn {
+    padding: 6px 12px;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #111;
+    border: none;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.album-picker-menu {
+    position: absolute;
+    z-index: 50;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+}
+
+.album-picker-item {
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-color);
+}
+
+.album-picker-item:hover {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.album-picker-new {
+    color: var(--accent-color);
+    font-weight: 700;
+    border-top: 1px solid var(--border-color);
+    margin-top: 4px;
+    padding-top: 8px;
+}
+
+.album-picker-empty {
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--gray-light);
+}

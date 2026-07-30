@@ -3,6 +3,7 @@ const express = require('express');
 const multer = require('multer');
 const mongoose = require('mongoose'); 
 const path = require('path');
+const albumsRouter = require('./routes/albums');
 
 const { authenticateUser, authorizeRoles } = require('./middlewares/auth');
 
@@ -49,6 +50,9 @@ app.get('/api/admin/dashboard', authenticateUser, authorizeRoles('admin'), (req,
 
 // Centralized error handler (/middleware/errorHandler.js)
 app.use(require('./middlewares/errorHandler'));
+
+// Mount albums router for album-related endpoints
+app.use('/api/albums', albumsRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`System running on port ${PORT}`));

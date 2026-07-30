@@ -28,7 +28,7 @@
                     <p>Upload, rename, and delete your own images here.</p>
                 </div>
             </div>
-
+            
             <div class="upload-panel">
                 <div class="upload-zone">
                     <label for="fileInput" class="file-select-btn" id="fileLabel">Choose an image...</label>
@@ -41,6 +41,22 @@
                 </div>
                 <p id="statusMsg" class="status-message">Supports JPG, PNG, WEBP · max 5MB</p>
             </div>
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Albums</h2>
+                        <p>Your liked images and custom collections.</p>
+                    </div>
+                    <button class="upload-btn" onclick="createNewAlbum()">+ New Album</button>
+                </div>
+                <div class="albums-grid" id="albumsGrid"></div>
+
+                <div class="section-heading">
+                    <div>
+                        <h2>My Images</h2>
+                        <p>Everything you've uploaded.</p>
+                    </div>
+                </div>
 
             <div class="gallery-container" id="accountGallery"></div>
         </main>
