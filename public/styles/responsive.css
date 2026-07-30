@@ -62,4 +62,18 @@
         padding: 24px;
     }
     
+    .nav-search {
+        width: 100%;
+    }
+
+    .nav-search .search-input {
+        max-width: none;
+    }.nav-search {
+        width: 100%;
+    }
+
+    .nav-search .search-input {
+        max-width: none;
+    }
+
 }

@@ -17,26 +17,20 @@
                     <span class="brand-mark">☁</span>
                     <span>Cloud Gallery</span>
                 </a>
+                <div class="nav-search">
+                    <input type="text" id="gallerySearch" class="search-input" placeholder="Search images..." oninput="filterGallery(this.value)">
+                </div>
                 <div class="nav-actions" id="navActions">
                     <a href="login.html" class="nav-link">Login</a>
                     <a href="register.html" class="nav-link nav-link-cta">Register</a>
                 </div>
             </nav>
-        </header>
-
-    <main class="gallery-section" id="gallery-section">
-            <div class="section-heading">
-                <h2>Gallery</h2>
-                <input type="text" id="gallerySearch" class="search-input" placeholder="Search images..." oninput="filterGallery(this.value)">
-            </div>
-        <div class="gallery-container" id="gallery"></div>
-    </main>
+        </header>    
 
     <main class="gallery-section" id="gallery-section">
             <div class="section-heading">
                 <h2>Gallery</h2>
             </div>
-            <div class="gallery-container" id="gallery"></div>
         </main>
     </div>
 
