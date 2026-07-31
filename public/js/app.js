@@ -122,6 +122,7 @@ function addCardToGallery(title, url, imageId, uploadedBy, likedByMe) {
     const ownerId = uploadedBy
         ? (typeof uploadedBy === 'object' ? (uploadedBy._id || uploadedBy.id) : uploadedBy)
         : null;
+    const ownerName = uploadedBy && typeof uploadedBy === 'object' ? uploadedBy.username : null;
     const isOwner = currentUser && ownerId && currentUser.id === ownerId;
 
     const card = document.createElement('div');
@@ -140,6 +141,7 @@ function addCardToGallery(title, url, imageId, uploadedBy, likedByMe) {
         <img src="${safeUrl}" alt="${safeTitle}" loading="lazy" onclick="openLightboxModal('${safeTitle}', '${safeUrl}')">
         <div class="pin-info">
             <div class="pin-title" title="${safeTitle}">${safeTitle}</div>
+            ${ownerName ? `<div class="pin-owner">by ${escapeHTML(ownerName)}</div>` : ''}
             <div class="pin-actions">
                 <button class="copy-btn" onclick="copyToClipboard('${safeUrl}', this)">Copy Link</button>
                 ${addAlbumBtn}
@@ -524,7 +526,8 @@ async function loadAlbumDetail(albumId) {
         }
 
         nameEl.innerText = album.name;
-        subtitleEl.innerText = `${album.images.length} image${album.images.length === 1 ? '' : 's'}`;
+        const ownerName = album.owner && album.owner.username ? album.owner.username : null;
+        subtitleEl.innerText = `${album.images.length} image${album.images.length === 1 ? '' : 's'}${ownerName ? ' · Created by ' + escapeHTML(ownerName) : ''}`;
 
         gallery.innerHTML = '';
         if (album.images.length === 0) {
